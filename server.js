@@ -34,7 +34,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const hostname = "localhost"; // change this to your LAN IP address
+const hostname = "172.20.10.3"; // change this to your LAN IP address
 const port = 5500;
 http.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);

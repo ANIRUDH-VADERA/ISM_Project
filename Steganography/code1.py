@@ -1,6 +1,7 @@
 import cv2
 import string
 import os
+
 d = {}
 c = {}
 
@@ -12,8 +13,7 @@ for i in range(255):
 
 # print(c)
 
-x = cv2.imread(
-    "C:/Users/Anirudh/OneDrive/Desktop/ISM_Project/Steganography/test_img1.png")
+x = cv2.imread("./test_img1.png")
 
 key = input("Enter key to edit(Security Key) : ")
 text = input("Enter text to hide : ")
@@ -29,12 +29,12 @@ for i in range(l):
     print(d[text[i]])
     print(d[key[kl]])
     x[n, m, z] = d[text[i]] ^ d[key[kl]]
-    n = n+1
-    m = m+1
+    n = n + 1
+    m = m + 1
     # this is for every value of z , remainder will be between 0,1,2 . i.e G,R,B plane will be set automatically.
-    m = (m+1) % 3
+    m = (m + 1) % 3
     # whatever be the value of z , z=(z+1)%3 will always between 0,1,2 . The same concept is used for random number in dice and card games.
-    kl = (kl+1) % len(key)
+    kl = (kl + 1) % len(key)
 
 cv2.imwrite("encrypted_img.jpg", x)
 os.startfile("encrypted_img.jpg")
@@ -56,10 +56,10 @@ if ch == 1:
     if key == key1:
         for i in range(l):
             decrypt += c[x[n, m, z] ^ d[key[kl]]]
-            n = n+1
-            m = m+1
-            m = (m+1) % 3
-            kl = (kl+1) % len(key)
+            n = n + 1
+            m = m + 1
+            m = (m + 1) % 3
+            kl = (kl + 1) % len(key)
         print("Encrypted text was : ", decrypt)
     else:
         print("Key doesn't matched.")
