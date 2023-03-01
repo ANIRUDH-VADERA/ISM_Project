@@ -1,5 +1,3 @@
-// const { read } = require('fs');
-
 // Message Types available
 messageTypes={LEFT:"left", RIGHT:"right",LOGIN:"login"};
 // messages will contain objects each containing {author,date,type,content}
@@ -46,7 +44,13 @@ socket.on("message",(message)=>{
     chatWindow.scrollTop=chatWindow.scrollHeight;
 });
 
-
+socket.on("base64 file",(fileInfo)=>{
+    const image = fileInfo.data;
+    localStorage.setItem(fileInfo.date, image);
+    messages.push(fileInfo);
+    displayMessages();
+    chatWindow.scrollTop=chatWindow.scrollHeight;
+});
 
 // we take the message, and return the HTML
 function createMessageHtml(message)
@@ -60,18 +64,14 @@ function createMessageHtml(message)
         if(message.type===messageTypes.LEFT)
         {
             if(message.flag == 1){
-                console.log("hi")
-                console.log(message)
-                return '<div class="message message-left"><div class="message-details flex"><p class="message-author">' + message.author + '</p><p class="message-date">'+message.date+'</p></div><img class="message-content" src = "images/'+message.content+'"  /></div>';
+                return '<div class="message message-left"><div class="message-details flex"><p class="message-author">' + message.author + '</p><p class="message-date">'+message.date+'</p></div><img class="message-content" src = "'+message.data+'"  /></div>';
             }
             return '<div class="message message-left"><div class="message-details flex"><p class="message-author">' + message.author + '</p><p class="message-date">'+message.date+'</p></div><p class="message-content">'+message.content+'</p></div>';
         }
         else
         {
             if(message.flag == 1){
-                console.log("hi")
-                console.log(message)
-                return '<div class="message message-right"><div class="message-details flex"><p class="message-author"></p><p class="message-date">'+message.date+'</p></div><img class="message-content" src = "images/'+message.content+'" /></div>'; 
+                return '<div class="message message-right"><div class="message-details flex"><p class="message-author"></p><p class="message-date">'+message.date+'</p></div><img class="message-content" src = "'+message.data+'" /></div>'; 
             }
             return '<div class="message message-right"><div class="message-details flex"><p class="message-author"></p><p class="message-date">'+message.date+'</p></div><p class="message-content">'+message.content+'</p></div>';
         }
