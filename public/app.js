@@ -46,6 +46,12 @@ socket.on("message",(message)=>{
 
 socket.on("base64 file",(fileInfo)=>{
     const image = fileInfo.data;
+    if(fileInfo.author == username){
+        fileInfo.type = messageTypes.RIGHT;
+    }
+    else{
+        fileInfo.type = messageTypes.LEFT;
+    }
     localStorage.setItem(fileInfo.date, image);
     messages.push(fileInfo);
     displayMessages();
