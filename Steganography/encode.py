@@ -44,5 +44,7 @@ def encode(image_name, secret_data):
 
 text = sys.argv[1].toString()
 image = sys.argv[2].toString()
+print(text)
+print(image)
 encoded_image = encode(image, text)
-cv2.imwrite("encrypted_img.jpg", encoded_image)
+cv2.imwrite("./ImageBuffer/encrypted_img.jpg", encoded_image)
