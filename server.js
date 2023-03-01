@@ -60,6 +60,7 @@ io.on("connection", (socket) => {
         if (err) {
           console.log(`Error while saving file: ${err}`);
         } else {
+          io.emit('base64 file', fileInfo)
           console.log(`File saved: ${fileInfo.name}`);
         }
      });
