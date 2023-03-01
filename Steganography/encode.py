@@ -1,5 +1,6 @@
 import cv2
 from util import to_bin
+import sys
 
 
 def encode(image_name, secret_data):
@@ -39,3 +40,9 @@ def encode(image_name, secret_data):
             if data_index >= data_len:
                 break
     return image
+
+
+text = sys.argv[1]
+image = sys.argv[2]
+encoded_image = encode(image, text)
+cv2.imwrite("encrypted_img.jpg", encoded_image)
