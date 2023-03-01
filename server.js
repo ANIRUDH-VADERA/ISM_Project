@@ -93,8 +93,12 @@ io.on("connection", (socket) => {
           console.log(`Error while saving file: ${err}`);
         } else {
           runPyEncode.then((data)=>{
-            // localStorage.setItem(fileInfo.imageName, image);
-            // io.emit('base64 file', fileInfo);
+            var mime = 'image/png'; 
+            var encoding = 'base64'; 
+            var data = fs.readFileSync('./Steganography/ImageBuffer/encrypted_img.png').toString(encoding); 
+            var uri = 'data:' + mime + ';' + encoding + ',' + data; 
+            fileInfo.imageData = uri;
+            io.emit('base64 file', fileInfo);
           }).catch(err => console.log(err)); 
         }
      });

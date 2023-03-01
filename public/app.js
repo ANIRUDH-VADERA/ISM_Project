@@ -71,14 +71,24 @@ function createMessageHtml(message)
             if(message.flag == 1){
                 return '<div class="message message-left"><div class="message-details flex"><p class="message-author">' + message.author + '</p><p class="message-date">'+message.date+'</p></div><img class="message-content" src = "'+message.data+'"  /></div>';
             }
-            return '<div class="message message-left"><div class="message-details flex"><p class="message-author">' + message.author + '</p><p class="message-date">'+message.date+'</p></div><p class="message-content">'+message.content+'</p></div>';
+            else if(message.flag == 0){
+                return '<div class="message message-left"><div class="message-details flex"><p class="message-author">' + message.author + '</p><p class="message-date">'+message.date+'</p></div><p class="message-content">'+message.content+'</p></div>';
+            }
+            else{
+                return '<div class="message message-left"><div class="message-details flex"><p class="message-author">' + message.author + '</p><p class="message-date">'+message.date+'</p></div><img class="message-content" src = "'+message.imageData+'"  /></div>';
+            }
         }
         else
         {
             if(message.flag == 1){
                 return '<div class="message message-right"><div class="message-details flex"><p class="message-author"></p><p class="message-date">'+message.date+'</p></div><img class="message-content" src = "'+message.data+'" /></div>'; 
             }
-            return '<div class="message message-right"><div class="message-details flex"><p class="message-author"></p><p class="message-date">'+message.date+'</p></div><p class="message-content">'+message.content+'</p></div>';
+            else if(message.flag == 0){
+                return '<div class="message message-right"><div class="message-details flex"><p class="message-author"></p><p class="message-date">'+message.date+'</p></div><p class="message-content">'+message.content+'</p></div>';
+            }
+            else{
+                return '<div class="message message-right"><div class="message-details flex"><p class="message-author"></p><p class="message-date">'+message.date+'</p></div><img class="message-content" src = "'+message.imageData+'" /></div>'; 
+            }
         }
         
     }
