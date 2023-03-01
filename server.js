@@ -11,6 +11,9 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   // Pass to next layer of middleware
   next();
@@ -67,7 +70,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const hostname = "172.20.10.3"; // change this to your LAN IP address
+const hostname = "172.16.86.214"; // change this to your LAN IP address
 const port = 5500;
 http.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
