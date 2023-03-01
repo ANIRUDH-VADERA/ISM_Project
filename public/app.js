@@ -28,23 +28,6 @@ imageInputButton.addEventListener("click",(e)=>{
 
 var socket=io();
 
-
-socket.on('upload', (fileInfo) => {
-    console.log("hi")
-    const buffer = Buffer.from(fileInfo.data.split(',')[1], 'base64');
-  
-    // Save the file to disk or do whatever you want with the data
-    fs.writeFile(fileInfo.name, buffer, (err) => {
-      if (err) {
-        console.log(`Error while saving file: ${err}`);
-      } else {
-        console.log(`File saved: ${fileInfo.name}`);
-      }
-   });
-  
-});
-
-
 socket.on("message",(message)=>{
     console.log(message);
     if(message.type!==messageTypes.LOGIN)
@@ -136,7 +119,7 @@ sendBtn2.addEventListener("click",(event)=>{
             const reader = new FileReader();
 
             reader.addEventListener('load',(event) => {
-                socket.emit('upload',{
+                socket.emit('base64 file',{
                     flag : 1,
                     name: file.name,
                     author: username,

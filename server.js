@@ -3,7 +3,7 @@ const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const ioFile = require("socketio-file-upload");
-
+const fs = require("fs");
 
 // Enable CORS
 app.use((req, res, next) => {
@@ -51,6 +51,20 @@ io.on("connection", (socket) => {
   fileUpload.on('error', (err) => {
     console.log(`Error while uploading file: ${err}`);
   });
+
+  socket.on('base64 file', (fileInfo) => {
+      const buffer = Buffer.from(fileInfo.data.split(',')[1], 'base64');
+    
+      // Save the file to disk or do whatever you want with the data
+      fs.writeFile(fileInfo.name, buffer, (err) => {
+        if (err) {
+          console.log(`Error while saving file: ${err}`);
+        } else {
+          console.log(`File saved: ${fileInfo.name}`);
+        }
+     });
+  });
+
 
 });
 
