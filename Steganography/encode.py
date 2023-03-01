@@ -10,8 +10,7 @@ def encode(image_name, secret_data):
     n_bytes = image.shape[0] * image.shape[1] * 3 // 8
     print("[*] Maximum bytes to encode:", n_bytes)
     if len(secret_data) > n_bytes:
-        raise ValueError(
-            "[!] Insufficient bytes, need bigger image or less data.")
+        raise ValueError("[!] Insufficient bytes, need bigger image or less data.")
     print("[*] Encoding data...")
     # add stopping criteria
     secret_data += "====="
