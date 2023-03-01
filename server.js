@@ -29,7 +29,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("A user disconnected");
   });
-  
+
   socket.on("message", (message) => {
     console.log("message", message);
     // Broadcasting this message to all the users that are connected
@@ -39,16 +39,16 @@ io.on("connection", (socket) => {
   const fileUpload = new ioFile();
 
   fileUpload.listen(socket);
-  
-  fileUpload.on('start', (fileInfo) => {
+
+  fileUpload.on("start", (fileInfo) => {
     console.log(`File upload started: ${fileInfo.name}`);
   });
-  
-  fileUpload.on('saved', (fileInfo) => {
+
+  fileUpload.on("saved", (fileInfo) => {
     console.log(`File saved: ${fileInfo.name}`);
   });
-  
-  fileUpload.on('error', (err) => {
+
+  fileUpload.on("error", (err) => {
     console.log(`Error while uploading file: ${err}`);
   });
 
@@ -81,9 +81,9 @@ io.on("connection", (socket) => {
        });
     }
   });
-
-
 });
+
+
 
 
 

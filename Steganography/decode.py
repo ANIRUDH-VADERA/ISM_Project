@@ -22,3 +22,4 @@ def decode(image_name):
         if decoded_data[-5:] == "=====":
             break
     return decoded_data[:-5]
+
