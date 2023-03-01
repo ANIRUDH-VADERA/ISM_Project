@@ -4,6 +4,7 @@ const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const ioFile = require("socketio-file-upload");
 const fs = require("fs");
+const url = require('url');
 
 // Enable CORS
 app.use((req, res, next) => {
@@ -21,6 +22,7 @@ app.use(express.static(__dirname + "/public"));
 app.get("/", function (request, response) {
   response.sendFile(__dirname + "/public/home.html");
 });
+
 
 // Checking if the users connect
 io.on("connection", (socket) => {
@@ -57,28 +59,46 @@ io.on("connection", (socket) => {
       const buffer = Buffer.from(fileInfo.data.split(',')[1], 'base64');
       io.emit('base64 file', fileInfo);
     }
-    else{
-      console.log(fileInfo);  
+    else{ 
       const buffer = Buffer.from(fileInfo.imageData.split(',')[1], 'base64');
       
-        // Save the file to disk or do whatever you want with the data
-        fs.writeFile("./Steganography/ImageBuffer/" + fileInfo.imageName, buffer, (err) => {
-          if (err) {
-            console.log(`Error while saving file: ${err}`);
-          } else {
-            console.log(fileInfo);
-            const {spawn} = require('child_process');
-            const childProcess=spawn('python', ['encode.py',fileInfo.textData,"./ImageBuffer/" + fileInfo.imageName]);
-                childProcess.stdout.on('data',(data)=>{
-                console.log(data.toString());
-            });
-            setTimeout(()=>{
+      let runPyEncode = new Promise((resolve, reject) => {
+        const {spawn} = require('child_process');
+        const childProcess=spawn('python', ['./Steganography/encode.py',fileInfo.textData,"ImageBuffer/" + fileInfo.imageName]);
+        childProcess.stdout.on('data',(data)=>{
+          resolve(data);
+        });
+        childProcess.stderr.on('data', (data) => {
+          console.log("err",data.toString());
+          reject(data);
+        });
+      })
 
-            },2000)
+      let runPyDecode = new Promise((resolve, reject) => {
+        const {spawn} = require('child_process');
+        const childProcess=spawn('python', ['./Steganography/decode.py',"ImageBuffer/" + fileInfo.imageName]);  
+        childProcess.stdout.on('data',(data)=>{
+          resolve(data);
+        });
+        childProcess.stderr.on('data', (data) => {
+          console.log("err",data.toString());
+          reject(data);
+        });
+      })
+
+
+      // Save the file to disk or do whatever you want with the data
+      fs.writeFile("./Steganography/ImageBuffer/" + fileInfo.imageName, buffer, (err) => {
+        if (err) {
+          console.log(`Error while saving file: ${err}`);
+        } else {
+          runPyEncode.then((data)=>{
+            // localStorage.setItem(fileInfo.imageName, image);
             // io.emit('base64 file', fileInfo);
-            console.log(`File saved: ${fileInfo.imageName}`);
-          }
-       });
+          }).catch(err => console.log(err)); 
+        }
+     });
+
     }
   });
 });

@@ -1,1 +1,0 @@
- addfirst(list,temp);

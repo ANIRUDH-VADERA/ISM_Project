@@ -52,7 +52,6 @@ socket.on("base64 file",(fileInfo)=>{
     else{
         fileInfo.type = messageTypes.LEFT;
     }
-    localStorage.setItem(fileInfo.date, image);
     messages.push(fileInfo);
     displayMessages();
     chatWindow.scrollTop=chatWindow.scrollHeight;

@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def to_bin(data):
     """Convert `data` to binary format as string"""
     if isinstance(data, str):

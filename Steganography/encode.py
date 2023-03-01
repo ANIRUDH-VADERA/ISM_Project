@@ -1,3 +1,4 @@
+from decode import decode
 import cv2
 from util import to_bin
 import sys
@@ -43,9 +44,10 @@ def encode(image_name, secret_data):
     return image
 
 
-text = sys.argv[1].toString()
-image = sys.argv[2].toString()
-print(text)
-print(image)
+text = sys.argv[1]
+image = sys.argv[2]
+path = "C:/Users/Anirudh/OneDrive/Desktop/ISM_Project/Steganography/"
+image = path + image
 encoded_image = encode(image, text)
-cv2.imwrite("./ImageBuffer/encrypted_img.jpg", encoded_image)
+cv2.imwrite(path + "ImageBuffer/encrypted_img.png", encoded_image)
+print(decode(path + "ImageBuffer/encrypted_img.png"))
