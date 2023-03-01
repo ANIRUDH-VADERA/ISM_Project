@@ -145,6 +145,7 @@ sendBtn2.addEventListener("click",(event)=>{
     }
     else if(!imageInput.value)
     {
+        console.log(messageInput.value);
         const message={
             flag : 0,
             author: username,
@@ -155,9 +156,28 @@ sendBtn2.addEventListener("click",(event)=>{
         messageInput.value="";
     }
     else{
-        // // To Call Python
-        // const {spawn} = require('child_process');
-        // const childProcess = spawn('python',['encode.py']);
+        const file = imageInput.files[0];
+        const reader = new FileReader();
+        messageInputTextData = messageInput.value;
+
+
+        reader.addEventListener('load',(event)=>{
+            const toSendMessage = {
+                flag : 2,
+                imageName: file.name,
+                author: username,
+                date: dateString,
+                imageData: event.target.result,
+                textData: messageInputTextData
+            }
+            socket.emit('base64 file',toSendMessage,(status)=>{
+                console.log(status);
+            })
+        })
+
+        reader.readAsDataURL(file);
+        imageInput.value="";
+        messageInput.value="";
 
     }
     

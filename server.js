@@ -8,9 +8,9 @@ const fs = require("fs");
 // Enable CORS
 app.use((req, res, next) => {
   // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  // res.setHeader("Access-Control-Allow-Origin", "*");
+  // res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  // res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   // Pass to next layer of middleware
   next();
@@ -53,17 +53,33 @@ io.on("connection", (socket) => {
   });
 
   socket.on('base64 file', (fileInfo) => {
+    if(fileInfo.flag == 1){
       const buffer = Buffer.from(fileInfo.data.split(',')[1], 'base64');
-    
-      // Save the file to disk or do whatever you want with the data
-      fs.writeFile(fileInfo.name, buffer, (err) => {
-        if (err) {
-          console.log(`Error while saving file: ${err}`);
-        } else {
-          io.emit('base64 file', fileInfo)
-          console.log(`File saved: ${fileInfo.name}`);
-        }
-     });
+      io.emit('base64 file', fileInfo);
+    }
+    else{
+      console.log(fileInfo);  
+      const buffer = Buffer.from(fileInfo.imageData.split(',')[1], 'base64');
+      
+        // Save the file to disk or do whatever you want with the data
+        fs.writeFile("./Steganography/ImageBuffer/" + fileInfo.imageName, buffer, (err) => {
+          if (err) {
+            console.log(`Error while saving file: ${err}`);
+          } else {
+            console.log(fileInfo);
+            const {spawn} = require('child_process');
+            const childProcess=spawn('python', ['encode.py',fileInfo.textData,"./ImageBuffer/" + fileInfo.imageName]);
+                childProcess.stdout.on('data',(data)=>{
+                console.log(data.toString());
+            });
+            setTimeout(()=>{
+
+            },2000)
+            // io.emit('base64 file', fileInfo);
+            console.log(`File saved: ${fileInfo.imageName}`);
+          }
+       });
+    }
   });
 
 
@@ -71,7 +87,7 @@ io.on("connection", (socket) => {
 
 
 
-const hostname = "172.16.86.214"; // change this to your LAN IP address
+const hostname = "localhost"; // change this to your LAN IP address
 const port = 5500;
 http.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
