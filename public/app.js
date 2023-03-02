@@ -9,6 +9,8 @@ const messageInput=document.querySelector(".messageInput");
 const imageInputButton=document.querySelector(".imageInput");
 const sendBtn2=document.querySelector(".sendBtn2");
 const imageInput = document.getElementById("getFile");
+
+
 // LOGIN
 let username="";
 const usernameInput=document.querySelector(".userNameInput");
@@ -19,15 +21,16 @@ const loginWindow=document.querySelector(".login");
 imageInputButton.addEventListener("click",(e)=>{  
     e.preventDefault();
     imageInput.click();
-    setTimeout(()=>{
-        imageInputButton.innerHTML = imageInput.files[0].name;
-    },3000)
+    imageInputButton.addEventListener('mouseout',()=>{
+        if(imageInput.files[0] != undefined){
+            imageInputButton.innerHTML = imageInput.files[0].name;
+        }
+    });
 })
 
 var socket=io();
 
 socket.on("message",(message)=>{
-    console.log(message);
     if(message.type!==messageTypes.LOGIN)
     {
         if(message.author===username)
@@ -69,25 +72,25 @@ function createMessageHtml(message)
         if(message.type===messageTypes.LEFT)
         {
             if(message.flag == 1){
-                return '<div class="message message-left"><div class="message-details flex"><p class="message-author">' + message.author + '</p><p class="message-date">'+message.date+'</p></div><img class="message-content" src = "'+message.data+'"  /></div>';
+                return '<div class="message message-left"><div class="message-details flex"><p class="message-author">' + message.author + '</p><p class="message-date">'+message.date+'</p></div><img class="clickable message-content" src = "'+message.data+'"  /></div>';
             }
             else if(message.flag == 0){
                 return '<div class="message message-left"><div class="message-details flex"><p class="message-author">' + message.author + '</p><p class="message-date">'+message.date+'</p></div><p class="message-content">'+message.content+'</p></div>';
             }
             else{
-                return '<div class="message message-left"><div class="message-details flex"><p class="message-author">' + message.author + '</p><p class="message-date">'+message.date+'</p></div><img class="message-content" src = "'+message.imageData+'"  /></div>';
+                return '<div class="message message-left"><div class="message-details flex"><p class="message-author">' + message.author + '</p><p class="message-date">'+message.date+'</p></div><img onclick="imageClicked(event)" data-name = "' + message.uniqueKey + '" class="message-content clickable" src = "'+message.imageData+'"  /></div>';
             }
         }
         else
         {
             if(message.flag == 1){
-                return '<div class="message message-right"><div class="message-details flex"><p class="message-author"></p><p class="message-date">'+message.date+'</p></div><img class="message-content" src = "'+message.data+'" /></div>'; 
+                return '<div class="message message-right"><div class="message-details flex"><p class="message-author"></p><p class="message-date">'+message.date+'</p></div><img class="clickable message-content" src = "'+message.data+'" /></div>'; 
             }
             else if(message.flag == 0){
                 return '<div class="message message-right"><div class="message-details flex"><p class="message-author"></p><p class="message-date">'+message.date+'</p></div><p class="message-content">'+message.content+'</p></div>';
             }
             else{
-                return '<div class="message message-right"><div class="message-details flex"><p class="message-author"></p><p class="message-date">'+message.date+'</p></div><img class="message-content" src = "'+message.imageData+'" /></div>'; 
+                return '<div class="message message-right"><div class="message-details flex"><p class="message-author"></p><p class="message-date">'+message.date+'</p></div><img onclick="imageClicked(event)" data-name = "' + message.uniqueKey + '" class="message-content clickable" src = "'+message.imageData+'" /></div>'; 
             }
         }
         
@@ -126,7 +129,11 @@ sendBtn2.addEventListener("click",(event)=>{
     const day=date.getDate();
     const year=date.getFullYear();
     const month=('0'+(date.getMonth()+1)).slice(-2);
+    const h = date.getHours();
+    const m  = date.getMinutes();
+    const s = date.getSeconds();
     const dateString=month+'/'+day+'/'+year;
+    const key = month+'_'+day+'_'+year+'_'+h + '_' + m + '_' + s;
     if(!messageInput.value)
     {
         if(imageInput.value){
@@ -147,6 +154,7 @@ sendBtn2.addEventListener("click",(event)=>{
             
             reader.readAsDataURL(file);
             imageInput.value="";
+            imageInputButton.innerHTML = "Choose File";
         }
         else{
             return console.log("must supply a message");
@@ -154,7 +162,6 @@ sendBtn2.addEventListener("click",(event)=>{
     }
     else if(!imageInput.value)
     {
-        console.log(messageInput.value);
         const message={
             flag : 0,
             author: username,
@@ -177,7 +184,8 @@ sendBtn2.addEventListener("click",(event)=>{
                 author: username,
                 date: dateString,
                 imageData: event.target.result,
-                textData: messageInputTextData
+                textData: messageInputTextData,
+                uniqueKey: key
             }
             socket.emit('base64 file',toSendMessage,(status)=>{
                 console.log(status);
@@ -187,7 +195,7 @@ sendBtn2.addEventListener("click",(event)=>{
         reader.readAsDataURL(file);
         imageInput.value="";
         messageInput.value="";
-
+        imageInputButton.innerHTML = "Choose File";
     }
     
 });
@@ -197,3 +205,17 @@ function sendMessage(message)
     socket.emit("message",message);
 }
 
+
+function imageClicked(event){
+    event.preventDefault();
+    imageUniqueKey = "encrypted_img" + event.target.dataset.name
+    fetch("/" + imageUniqueKey).then((res)=>{
+        return res.json()
+    }).then((data)=>{
+        var x = document.getElementById("snackbar");
+        // Add the "show" class to DIV
+        x.className = "show";
+        x.innerHTML = data.data
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 5000);
+    })
+}
