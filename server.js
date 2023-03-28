@@ -9,9 +9,9 @@ const url = require('url');
 // Enable CORS
 app.use((req, res, next) => {
   // Set CORS headers
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  // res.setHeader("Access-Control-Allow-Origin", "*");
+  // res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  // res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   // Pass to next layer of middleware
   next();
@@ -118,7 +118,7 @@ io.on("connection", (socket) => {
 
 
 
-const hostname = "192.168.45.201"; // change this to your LAN IP address
+const hostname = "localhost"; // change this to your LAN IP address
 const port = 5500;
 http.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);

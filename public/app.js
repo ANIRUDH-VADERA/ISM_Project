@@ -17,7 +17,6 @@ const usernameInput=document.querySelector(".userNameInput");
 const loginBtn=document.querySelector(".loginBtn");
 const loginWindow=document.querySelector(".login");
 
-
 imageInputButton.addEventListener("click",(e)=>{  
     e.preventDefault();
     imageInput.click();
@@ -42,9 +41,17 @@ socket.on("message",(message)=>{
             message.type=messageTypes.LEFT;
         }
     }
-    messages.push(message);
-    displayMessages();
-    chatWindow.scrollTop=chatWindow.scrollHeight;
+    else{
+        messages.push(message);
+        displayMessages();
+        chatWindow.scrollTop=chatWindow.scrollHeight; 
+    }
+
+    if(message.toWhom == "To All" || message.toWhom == username){
+        messages.push(message);
+        displayMessages();
+        chatWindow.scrollTop=chatWindow.scrollHeight;
+    }
 });
 
 socket.on("base64 file",(fileInfo)=>{
@@ -120,6 +127,9 @@ loginBtn.addEventListener("click",(event)=>{
             type: messageTypes.LOGIN
         }
     );
+    console.log(username);
+    document.querySelector(".title").innerHTML = "Group Chat " + username;
+
 });
 
 
@@ -134,70 +144,90 @@ sendBtn2.addEventListener("click",(event)=>{
     const s = date.getSeconds();
     const dateString=month+'/'+day+'/'+year;
     const key = month+'_'+day+'_'+year+'_'+h + '_' + m + '_' + s;
-    if(!messageInput.value)
-    {
-        if(imageInput.value){
-            const file = imageInput.files[0];
-            const reader = new FileReader();
+    var popupform = document.getElementById("popupForm")
+    popupform.style.display = "block";
+    popupform.innerHTML = "<button class='realMsg'>To All</button>";
+    messages.map((msg)=>{
+        if(msg.type == "login"){
+            popupform.innerHTML += "<button class='realMsg'>"+msg.author+"</button>";
+        }
+    });
 
-            reader.addEventListener('load',(event) => {
-                socket.emit('base64 file',{
-                    flag : 1,
-                    name: file.name,
+    var allButtons = document.querySelectorAll(".realMsg");
+
+    allButtons = Array.from(allButtons)
+    allButtons.map((item)=>{
+        item.addEventListener("click",()=>{
+            var toWhom = item.innerHTML;
+            if(!messageInput.value)
+            {
+                if(imageInput.value){
+                    const file = imageInput.files[0];
+                    const reader = new FileReader();
+        
+                    reader.addEventListener('load',(event) => {
+                        socket.emit('base64 file',{
+                            flag : 1,
+                            name: file.name,
+                            author: username,
+                            date: dateString,
+                            data: event.target.result,
+                            toWhom: toWhom
+                        },(status)=>{
+                            console.log(status);
+                        })
+                    })
+                    
+                    reader.readAsDataURL(file);
+                    imageInput.value="";
+                    imageInputButton.innerHTML = "Choose File";
+                }
+                else{
+                    return console.log("must supply a message");
+                }
+            }
+            else if(!imageInput.value)
+            {
+                const message={
+                    flag : 0,
                     author: username,
                     date: dateString,
-                    data: event.target.result
-                },(status)=>{
-                    console.log(status);
-                })
-            })
-            
-            reader.readAsDataURL(file);
-            imageInput.value="";
-            imageInputButton.innerHTML = "Choose File";
-        }
-        else{
-            return console.log("must supply a message");
-        }
-    }
-    else if(!imageInput.value)
-    {
-        const message={
-            flag : 0,
-            author: username,
-            date: dateString,
-            content : messageInput.value,
-        }
-        sendMessage(message);
-        messageInput.value="";
-    }
-    else{
-        const file = imageInput.files[0];
-        const reader = new FileReader();
-        messageInputTextData = messageInput.value;
-
-
-        reader.addEventListener('load',(event)=>{
-            const toSendMessage = {
-                flag : 2,
-                imageName: file.name,
-                author: username,
-                date: dateString,
-                imageData: event.target.result,
-                textData: messageInputTextData,
-                uniqueKey: key
+                    content : messageInput.value,
+                    toWhom: toWhom
+                }
+                sendMessage(message);
+                messageInput.value="";
             }
-            socket.emit('base64 file',toSendMessage,(status)=>{
-                console.log(status);
-            })
+            else{
+                const file = imageInput.files[0];
+                const reader = new FileReader();
+                messageInputTextData = messageInput.value;
+        
+        
+                reader.addEventListener('load',(event)=>{
+                    const toSendMessage = {
+                        flag : 2,
+                        imageName: file.name,
+                        author: username,
+                        date: dateString,
+                        imageData: event.target.result,
+                        textData: messageInputTextData,
+                        uniqueKey: key,
+                        toWhom: toWhom
+                    }
+                    socket.emit('base64 file',toSendMessage,(status)=>{
+                        console.log(status);
+                    })
+                })
+        
+                reader.readAsDataURL(file);
+                imageInput.value="";
+                messageInput.value="";
+                imageInputButton.innerHTML = "Choose File";
+            }
+            document.getElementById("popupForm").style.display = "none";
         })
-
-        reader.readAsDataURL(file);
-        imageInput.value="";
-        messageInput.value="";
-        imageInputButton.innerHTML = "Choose File";
-    }
-    
+    })
 });
 
 function sendMessage(message)

@@ -301,3 +301,25 @@ h2{
   from {right: 30px; opacity: 1;}
   to {right: 0; opacity: 0;}
 }
+
+.loginPopup {
+  position: relative;
+  text-align: center;
+  width: 100%;
+}
+.formPopup {
+  display: none;
+  position: fixed;
+  right: 10%;
+  bottom: 15%;
+  transform: translate(-50%, 5%);
+  z-index: 9;
+  background: #1f1f1f;
+  margin: 25px 0;
+  padding: 25px;
+  color: white;
+  height: 200px;
+  width: 200px;
+  border-radius:25px;
+  overflow-y: scroll;
+}
